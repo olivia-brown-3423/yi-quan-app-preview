@@ -1,0 +1,8 @@
+{
+  "name": "仪圈APP-交互图-第2版",
+  "description": "A comprehensive social platform integrating messaging, contacts, channel feeds, community forums, and personal profiles.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
