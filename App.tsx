@@ -30,7 +30,8 @@ import {
   VideoDetail,
   ProjectDetail,
   CreateProductPage,
-  ProductManagementPage
+  ProductManagementPage,
+  ChannelShopPage
 } from './components/SubPages';
 
 // --- Navigation Context ---
@@ -57,7 +58,8 @@ type Screen =
   | { name: 'add_friend' }
   | { name: 'create_group' }
   | { name: 'create_product'; params?: any }
-  | { name: 'product_management' };
+  | { name: 'product_management' }
+  | { name: 'channel_shop'; params?: any };
 
 interface NavContextType {
   activeTab: string;
@@ -122,6 +124,7 @@ export default function App() {
       case 'create_group': return <CreateGroupPage />;
       case 'create_product': return <CreateProductPage params={screen.params} />;
       case 'product_management': return <ProductManagementPage />;
+      case 'channel_shop': return <ChannelShopPage />;
       default: return null;
     }
   };

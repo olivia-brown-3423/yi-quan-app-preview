@@ -24,7 +24,7 @@ export interface Message {
   sender: string;
   content: string;
   time: string;
-  type: 'text' | 'image' | 'voice' | 'system' | 'redPacket' | 'videoCall';
+  type: 'text' | 'image' | 'voice' | 'system' | 'redPacket' | 'videoCall' | 'product';
   unreadCount?: number;
   avatar?: string;
   isGroup?: boolean;
@@ -36,6 +36,7 @@ export interface Message {
     status: 'sent' | 'received' | 'opened';
     note: string;
   };
+  product?: Product;
 }
 
 export interface FeedItem {
