@@ -1,5 +1,5 @@
 
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState } from 'react';
 import { 
   MessageSquare, 
   Users, 
@@ -7,77 +7,37 @@ import {
   Aperture, 
   User as UserIcon 
 } from 'lucide-react';
-import { MessagesTab } from './components/MainTabs';
-import { ContactsTab } from './components/MainTabs';
-import { ChannelsTab } from './components/MainTabs';
-import { CommunityTab } from './components/MainTabs';
-import { MeTab } from './components/MainTabs';
-import { 
-  ChatDetail, 
-  CreateChannel, 
-  UserProfile, 
-  ChannelDetail, 
-  SearchPage, 
-  CommunityDetail, 
-  WalletPage, 
-  SettingsPage,
-  ProductDetail,
-  PublishPage,
-  ArticleDetail,
-  QADetail,
-  AddFriendPage,
-  CreateGroupPage,
-  VideoDetail,
-  ProjectDetail,
-  CreateProductPage,
-  ProductManagementPage,
-  ChannelShopPage
-} from './components/SubPages';
 
-// --- Navigation Context ---
-type Screen = 
-  | 'messages' 
-  | 'contacts' 
-  | 'channels' 
-  | 'community' 
-  | 'me'
-  | { name: 'chat_detail'; params: any }
-  | { name: 'create_channel' }
-  | { name: 'user_profile'; params: any }
-  | { name: 'channel_detail'; params: any }
-  | { name: 'search' }
-  | { name: 'community_detail'; params: any }
-  | { name: 'article_detail'; params: any }
-  | { name: 'qa_detail'; params: any }
-  | { name: 'video_detail'; params: any }
-  | { name: 'project_detail'; params: any }
-  | { name: 'wallet' }
-  | { name: 'settings' }
-  | { name: 'product_detail'; params: any }
-  | { name: 'publish' }
-  | { name: 'add_friend' }
-  | { name: 'create_group' }
-  | { name: 'create_product'; params?: any }
-  | { name: 'product_management' }
-  | { name: 'channel_shop'; params?: any };
+import { NavContext, Screen } from './context/NavContext';
 
-interface NavContextType {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  screenStack: Screen[];
-  pushScreen: (screen: Screen) => void;
-  popScreen: () => void;
-}
+// Tabs
+import { MessagesTab } from './tabs/MessagesTab';
+import { ContactsTab } from './tabs/ContactsTab';
+import { ChannelsTab } from './tabs/ChannelsTab';
+import { CommunityTab } from './tabs/CommunityTab';
+import { MeTab } from './tabs/MeTab';
 
-export const NavContext = createContext<NavContextType>({
-  activeTab: 'messages',
-  setActiveTab: () => {},
-  screenStack: [],
-  pushScreen: () => {},
-  popScreen: () => {},
-});
-
-export const useNav = () => useContext(NavContext);
+// Pages
+import { ChatDetail } from './pages/chat/ChatDetail';
+import { CreateChannel } from './pages/channel/CreateChannel';
+import { UserProfile } from './pages/contact/UserProfile';
+import { ChannelDetail } from './pages/channel/ChannelDetail';
+import { SearchPage } from './pages/search/SearchPage';
+import { CommunityDetail } from './pages/community/CommunityDetail';
+import { ArticleDetail } from './pages/community/ArticleDetail';
+import { QADetail } from './pages/community/QADetail';
+import { VideoDetail } from './pages/community/VideoDetail';
+import { ProjectDetail } from './pages/community/ProjectDetail';
+import { WalletPage } from './pages/me/WalletPage';
+import { SettingsPage } from './pages/me/SettingsPage';
+import { ProductDetail } from './pages/shop/ProductDetail';
+import { PublishPage } from './pages/community/PublishPage';
+import { AddFriendPage } from './pages/contact/AddFriendPage';
+import { CreateGroupPage } from './pages/chat/CreateGroupPage';
+import { CreateProductPage } from './pages/shop/CreateProductPage';
+import { ProductManagementPage } from './pages/shop/ProductManagementPage';
+import { ChannelShopPage } from './pages/channel/ChannelShopPage';
+import { ChannelListSelector } from './pages/channel/ChannelListSelector';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('messages');
@@ -125,6 +85,7 @@ export default function App() {
       case 'create_product': return <CreateProductPage params={screen.params} />;
       case 'product_management': return <ProductManagementPage />;
       case 'channel_shop': return <ChannelShopPage />;
+      case 'channel_list_selector': return <ChannelListSelector />;
       default: return null;
     }
   };
@@ -134,14 +95,11 @@ export default function App() {
       <div className="flex justify-center bg-gray-900 h-screen w-full">
         <div className="w-full max-w-md h-full bg-white relative flex flex-col shadow-2xl overflow-hidden">
           
-          {/* Main Content Area */}
           <div className="flex-1 overflow-hidden relative">
-            {/* The Base Tab Layer */}
             <div className={`absolute inset-0 w-full h-full ${screenStack.length > 0 ? 'hidden' : 'block'}`}>
                {renderActiveTab()}
             </div>
 
-            {/* Stacked Screens (Overlays) */}
             {screenStack.map((screen, index) => (
                <div key={index} className="absolute inset-0 w-full h-full bg-white z-20 slide-in">
                  {renderStackScreen(screen)}
@@ -149,7 +107,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Bottom Navigation Bar - Only visible if no stack */}
           {screenStack.length === 0 && (
             <div className="h-16 border-t border-gray-200 flex items-center justify-around bg-white shrink-0 pb-safe">
               <NavButton id="messages" label="消息" icon={<MessageSquare size={24} />} active={activeTab === 'messages'} onClick={setActiveTab} />
