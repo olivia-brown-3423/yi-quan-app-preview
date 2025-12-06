@@ -1,139 +1,212 @@
 
-import React, { useState } from 'react';
-import { ChevronRight, Heart, MessageCircle, Share2, Hash, Plus } from 'lucide-react';
-import { MOCK_CHANNELS } from '../types';
+import React, { useState, useRef } from 'react';
+import { 
+  MessageCircle, 
+  Heart, 
+  Share2, 
+  Hash, 
+  User, 
+  Music2, 
+  Plus,
+  Search,
+  Send,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react';
+import { MOCK_CHANNELS, MOCK_VIDEOS } from '../types';
 import { useNav } from '../context/NavContext';
 
 export const ChannelsTab = () => {
   const { pushScreen } = useNav();
   const [activeTab, setActiveTab] = useState<'recommend' | 'mine'>('recommend');
 
-  const myChannels = MOCK_CHANNELS.filter(c => c.ownerId === 'me' || c.members > 1000);
+  // Generate a mixed feed where videos belong to specific channels
+  const CHANNEL_FEED = [
+    {
+      id: 'f1',
+      channel: MOCK_CHANNELS[0], // Expo
+      video: MOCK_VIDEOS[0],
+      desc: 'This year\'s exhibition site is crowded with people! So many new technologies.',
+      music: 'Exhibition Live Audio - Original'
+    },
+    {
+      id: 'f2',
+      channel: MOCK_CHANNELS[1], // Tech Group
+      video: MOCK_VIDEOS[1],
+      desc: 'Encountered a difficult problem during on-site debugging, seeking help from the bosses in the group!',
+      music: 'Engineer\'s Daily BGM'
+    },
+    {
+      id: 'f3',
+      channel: MOCK_CHANNELS[0],
+      video: MOCK_VIDEOS[3],
+      desc: 'Unboxing the new analyzer, the details are amazing.',
+      music: 'Technology Frontier'
+    },
+    {
+      id: 'f4',
+      channel: MOCK_CHANNELS[2], // Personal Garden
+      video: MOCK_VIDEOS[2],
+      desc: 'Share a piece of my quiet time.',
+      music: 'Relaxing Moment'
+    },
+  ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white relative">
-       <div className="absolute top-0 w-full z-20 flex justify-center pt-4 space-x-6">
-         <button 
-           onClick={() => setActiveTab('recommend')}
-           className={`text-lg transition-colors ${activeTab === 'recommend' ? 'font-bold border-b-2 border-white pb-1' : 'text-gray-400'}`}
-         >
-           频道
-         </button>
-         <button 
-           onClick={() => setActiveTab('mine')}
-           className={`text-lg transition-colors ${activeTab === 'mine' ? 'font-bold border-b-2 border-white pb-1' : 'text-gray-400'}`}
-         >
-           我的频道
-         </button>
+    <div className="flex flex-col h-full bg-black text-white relative">
+       {/* Global Top Tabs (Transparent Overlay) */}
+       <div className="absolute top-0 left-0 w-full z-30 flex justify-between items-center px-4 pt-4 pb-2 bg-gradient-to-b from-black/60 to-transparent">
+         <div className="w-8">
+            <Search className="text-white/80" size={24} onClick={() => pushScreen({ name: 'search' })} />
+         </div>
+         <div className="flex space-x-6">
+           <button 
+             onClick={() => setActiveTab('mine')}
+             className={`text-base font-medium transition-colors ${activeTab === 'mine' ? 'text-white border-b-2 border-white pb-1' : 'text-white/60'}`}
+           >
+             关注
+           </button>
+           <button 
+             onClick={() => setActiveTab('recommend')}
+             className={`text-base font-medium transition-colors ${activeTab === 'recommend' ? 'text-white border-b-2 border-white pb-1' : 'text-white/60'}`}
+           >
+             推荐
+           </button>
+         </div>
+         <div className="w-8 flex justify-end">
+            <Plus className="text-white/80" size={28} onClick={() => pushScreen({ name: 'create_channel' })} />
+         </div>
        </div>
 
-       <div className="flex-1 overflow-hidden relative">
+       {/* Main Content Area */}
+       <div className="flex-1 overflow-y-auto snap-y snap-mandatory no-scrollbar bg-gray-900">
          {activeTab === 'recommend' ? (
-           <div className="flex overflow-x-auto snap-x snap-mandatory h-full no-scrollbar">
-             {MOCK_CHANNELS.map((ch) => (
-                <div key={ch.id} className="w-full h-full shrink-0 snap-center relative flex flex-col justify-end pb-20 bg-gray-800">
-                   <img src={ch.cover} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="cover" />
-                   
-                   <div className="relative z-10 px-4 mb-10">
-                     <div 
-                        onClick={() => pushScreen({ name: 'channel_detail', params: { title: ch.name } })}
-                        className="cursor-pointer"
-                     >
-                       <h2 className="text-2xl font-bold mb-2 flex items-center">
-                          @{ch.name} <ChevronRight className="ml-1 opacity-70" />
-                       </h2>
-                       <p className="text-sm text-gray-200 mb-4 line-clamp-2">{ch.description}</p>
-                     </div>
-                     <div className="flex space-x-4">
-                       <button 
-                        onClick={() => pushScreen({ name: 'chat_detail', params: { title: ch.name, count: ch.members } })}
-                        className="bg-blue-600 px-6 py-2 rounded-full font-medium active:scale-95 transition-transform shadow-lg shadow-blue-900/50"
-                       >
-                         进入群聊
-                       </button>
-                       <button className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-full font-medium">
-                         加入频道
-                       </button>
-                     </div>
-                   </div>
+           CHANNEL_FEED.map((item, index) => (
+              <div key={item.id} className="w-full h-full snap-start relative bg-gray-800">
+                 {/* Video/Image Cover */}
+                 <img 
+                    src={item.video.videoInfo?.cover} 
+                    className="absolute inset-0 w-full h-full object-cover opacity-90" 
+                    alt="video-cover" 
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80 pointer-events-none"></div>
 
-                   <div className="absolute right-2 bottom-32 flex flex-col items-center space-y-6">
-                     <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 bg-gray-800/80 rounded-full flex items-center justify-center mb-1">
-                          <Heart size={20} />
-                        </div>
-                        <span className="text-xs text-white/80">{ch.members}</span>
-                     </div>
-                     <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 bg-gray-800/80 rounded-full flex items-center justify-center mb-1">
-                          <MessageCircle size={20} />
-                        </div>
-                        <span className="text-xs text-white/80">{ch.resources}</span>
-                     </div>
-                     <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 bg-gray-800/80 rounded-full flex items-center justify-center mb-1">
-                          <Share2 size={20} />
-                        </div>
-                        <span className="text-xs text-white/80">分享</span>
-                     </div>
-                   </div>
-                </div>
-             ))}
-           </div>
-         ) : (
-           <div className="h-full bg-gray-100 overflow-y-auto pt-16 px-4">
-              <div className="mb-6">
-                 <h3 className="text-gray-900 font-bold mb-3 flex items-center">
-                    <Hash size={18} className="mr-2 text-blue-500" /> 我创建的频道
-                 </h3>
-                 <div className="grid grid-cols-1 gap-3">
-                    {MOCK_CHANNELS.filter(c => c.ownerId === 'me').map(ch => (
-                      <div 
-                        key={ch.id} 
-                        className="bg-white p-4 rounded-xl shadow-sm flex items-center cursor-pointer active:scale-[0.99] transition-transform"
-                        onClick={() => pushScreen({ name: 'channel_detail', params: { title: ch.name } })}
-                      >
-                         <img src={ch.cover} className="w-12 h-12 rounded-lg object-cover mr-3" />
-                         <div className="flex-1">
-                            <div className="font-bold text-gray-900">{ch.name}</div>
-                            <div className="text-xs text-gray-500">{ch.members} 成员 · {ch.resources} 资源</div>
-                         </div>
-                         <button className="text-gray-400"><ChevronRight /></button>
-                      </div>
-                    ))}
-                    {MOCK_CHANNELS.filter(c => c.ownerId === 'me').length === 0 && (
-                       <div 
-                          className="bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl flex items-center justify-center text-gray-400 cursor-pointer"
-                          onClick={() => pushScreen({ name: 'create_channel' })}
-                       >
-                          <Plus size={20} className="mr-2" /> 创建新频道
+                 {/* TOP CHANNEL HEADER (Floating) */}
+                 <div className="absolute top-16 left-0 w-full px-4 flex justify-between items-start z-20 pointer-events-none">
+                    {/* Spacer to balance layout */}
+                    <div className="w-10"></div> 
+                    
+                    {/* Center: User Name Pill (Formerly Channel Name) */}
+                    <div 
+                      className="bg-black/40 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full flex items-center space-x-2 shadow-lg pointer-events-auto cursor-pointer active:scale-95 transition-transform"
+                      onClick={() => pushScreen({ name: 'user_profile', params: { id: item.video.user.id } })}
+                    >
+                       <User size={14} className="text-blue-400" />
+                       <span className="text-xs font-bold tracking-wide truncate max-w-[150px]">{item.video.user.name}</span>
+                       <span className="w-1 h-1 rounded-full bg-white/50"></span>
+                       <span className="text-[10px] text-white/80">进入主页</span>
+                    </div>
+
+                    {/* Right: Chat Button (Links to Personal Chat) - UPDATED TO BLUE */}
+                    <button 
+                       className="w-11 h-11 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-900/30 active:scale-90 transition-transform pointer-events-auto border border-blue-400/50 hover:bg-blue-500"
+                       onClick={() => pushScreen({ name: 'chat_detail', params: { title: item.video.user.name } })}
+                    >
+                       <MessageCircle size={22} fill="currentColor" className="text-white" />
+                    </button>
+                 </div>
+
+                 {/* Right Sidebar Interaction */}
+                 <div className="absolute right-2 bottom-20 flex flex-col items-center space-y-6 z-20 w-14">
+                    {/* User Avatar */}
+                    <div className="relative mb-2">
+                       <img 
+                         src={item.video.user.avatar} 
+                         className="w-12 h-12 rounded-full border-2 border-white shadow-lg cursor-pointer" 
+                         onClick={() => pushScreen({ name: 'user_profile', params: { id: item.video.user.id } })}
+                       />
+                       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-red-500 rounded-full p-0.5 border border-white">
+                          <Plus size={10} className="text-white" />
                        </div>
-                    )}
+                    </div>
+
+                    {/* Join Channel Button */}
+                    <div className="flex flex-col items-center animate-in slide-in-from-right duration-500 delay-100 pb-2">
+                        <button 
+                            className="w-11 h-11 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-fuchsia-500/30 active:scale-90 transition-transform border border-white/30 backdrop-blur-md group relative overflow-hidden"
+                            onClick={() => pushScreen({ name: 'channel_detail', params: { title: item.channel.name, count: item.channel.members } })}
+                        >
+                           <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                           <Hash size={18} className="text-white relative z-10" />
+                        </button>
+                        <span className="text-[10px] font-medium text-white/90 shadow-black drop-shadow-md mt-1.5 tracking-wide">加入频道</span>
+                    </div>
+
+                    {/* Likes */}
+                    <div className="flex flex-col items-center space-y-1">
+                       <Heart size={30} className="text-white drop-shadow-md cursor-pointer active:scale-75 transition-transform" />
+                       <span className="text-xs font-medium shadow-black drop-shadow-md">{item.video.stats.likes}</span>
+                    </div>
+
+                    {/* Comments */}
+                    <div className="flex flex-col items-center space-y-1">
+                       <MessageCircle size={30} className="text-white drop-shadow-md cursor-pointer" />
+                       <span className="text-xs font-medium shadow-black drop-shadow-md">{item.video.stats.comments}</span>
+                    </div>
+
+                    {/* Share */}
+                    <div className="flex flex-col items-center space-y-1">
+                       <Share2 size={30} className="text-white drop-shadow-md cursor-pointer" />
+                       <span className="text-xs font-medium shadow-black drop-shadow-md">分享</span>
+                    </div>
+                 </div>
+
+                 {/* Bottom Info (Personal) */}
+                 <div className="absolute bottom-4 left-0 w-full px-4 pb-16 z-20 pointer-events-none">
+                    <div className="max-w-[80%] pointer-events-auto">
+                       <div 
+                         className="font-bold text-lg mb-2 text-white drop-shadow-md flex items-center cursor-pointer"
+                         onClick={() => pushScreen({ name: 'user_profile', params: { id: item.video.user.id } })}
+                       >
+                          @{item.video.user.name}
+                       </div>
+                       <p className="text-sm text-white/90 leading-relaxed mb-3 drop-shadow-md line-clamp-2">
+                          {item.desc}
+                       </p>
+                       <div className="flex items-center text-white/70 text-xs space-x-2">
+                          <Music2 size={12} className="animate-spin-slow" />
+                          <div className="w-32 overflow-hidden">
+                             <div className="whitespace-nowrap">{item.music}</div>
+                          </div>
+                       </div>
+                    </div>
                  </div>
               </div>
-
-              <div>
-                 <h3 className="text-gray-900 font-bold mb-3 flex items-center">
-                    <Heart size={18} className="mr-2 text-red-500" /> 我加入的频道
-                 </h3>
-                 <div className="grid grid-cols-1 gap-3">
-                    {myChannels.map(ch => (
-                       <div 
-                         key={ch.id} 
-                         className="bg-white p-4 rounded-xl shadow-sm flex items-center cursor-pointer active:scale-[0.99] transition-transform"
-                         onClick={() => pushScreen({ name: 'channel_detail', params: { title: ch.name } })}
-                       >
-                          <img src={ch.cover} className="w-12 h-12 rounded-lg object-cover mr-3" />
-                          <div className="flex-1">
-                             <div className="font-bold text-gray-900">{ch.name}</div>
-                             <div className="text-xs text-gray-500 line-clamp-1">{ch.description}</div>
-                          </div>
-                          <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">
-                             进入
+           ))
+         ) : (
+           /* Simple 'Mine' Tab View */
+           <div className="min-h-full bg-gray-50 pt-16 px-4 pb-20">
+              <div className="text-gray-500 text-sm mb-4 flex items-center justify-center">
+                 <Hash size={14} className="mr-1"/> 我关注的频道更新
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                 {CHANNEL_FEED.slice(0,2).map(item => (
+                    <div key={'mine-'+item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" onClick={() => pushScreen({ name: 'channel_detail', params: { title: item.channel.name } })}>
+                       <div className="aspect-[3/4] bg-gray-200 relative">
+                          <img src={item.video.videoInfo?.cover} className="w-full h-full object-cover" />
+                          <div className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-md">
+                             {item.channel.name}
                           </div>
                        </div>
-                    ))}
-                 </div>
+                       <div className="p-2">
+                          <div className="text-sm font-bold text-gray-900 line-clamp-2">{item.desc}</div>
+                          <div className="flex items-center mt-2 text-xs text-gray-400">
+                             <img src={item.video.user.avatar} className="w-4 h-4 rounded-full mr-1" />
+                             {item.video.user.name}
+                          </div>
+                       </div>
+                    </div>
+                 ))}
               </div>
            </div>
          )}
