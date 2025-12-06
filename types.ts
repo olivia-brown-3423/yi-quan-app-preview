@@ -122,6 +122,17 @@ export interface UserCommentHistory {
   time: string;
 }
 
+export interface Collection {
+  id: string;
+  title: string;
+  description: string;
+  cover: string;
+  videoCount: number;
+  isPublic: boolean;
+  updatedAt: string;
+  items?: FeedItem[];
+}
+
 // --- Mock Data ---
 
 export const CURRENT_USER: User = {
@@ -561,6 +572,36 @@ export const MOCK_CHANNELS: Channel[] = [
     cover: 'https://picsum.photos/id/1062/300/500',
     ownerId: 'me', // Owned by current user
     announcements: ['这是我的个人频道。']
+  }
+];
+
+export const MOCK_COLLECTIONS: Collection[] = [
+  {
+    id: 'col1',
+    title: '2024 年度视觉精选',
+    description: '汇聚全年灵感瞬间，记录每一次技术突破与光影交错。',
+    cover: 'https://picsum.photos/id/1040/600/300',
+    videoCount: 8,
+    isPublic: true,
+    updatedAt: '2024-12-04'
+  },
+  {
+    id: 'col2',
+    title: '冰岛·极境之旅 Vlog',
+    description: '穿越冰与火之歌，探索世界尽头的极致浪漫。',
+    cover: 'https://picsum.photos/id/1043/600/300',
+    videoCount: 12,
+    isPublic: false,
+    updatedAt: '2024-11-20'
+  },
+  {
+    id: 'col3',
+    title: '复古游戏机收藏室',
+    description: '致敬经典，我的怀旧数码硬件收藏清单。',
+    cover: 'https://picsum.photos/id/1065/600/300',
+    videoCount: 5,
+    isPublic: true,
+    updatedAt: '2024-10-15'
   }
 ];
 

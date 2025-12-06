@@ -38,6 +38,9 @@ import { CreateProductPage } from './pages/shop/CreateProductPage';
 import { ProductManagementPage } from './pages/shop/ProductManagementPage';
 import { ChannelShopPage } from './pages/channel/ChannelShopPage';
 import { ChannelListSelector } from './pages/channel/ChannelListSelector';
+import { CollectionListPage } from './pages/me/CollectionListPage';
+import { CreateCollectionPage } from './pages/me/CreateCollectionPage';
+import { CollectionDetailPage } from './pages/me/CollectionDetailPage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('messages');
@@ -86,6 +89,9 @@ export default function App() {
       case 'product_management': return <ProductManagementPage />;
       case 'channel_shop': return <ChannelShopPage />;
       case 'channel_list_selector': return <ChannelListSelector />;
+      case 'collection_list': return <CollectionListPage />;
+      case 'create_collection': return <CreateCollectionPage />;
+      case 'collection_detail': return <CollectionDetailPage params={screen.params} />;
       default: return null;
     }
   };

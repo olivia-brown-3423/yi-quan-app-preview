@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Settings, Plus, ShoppingCart, CreditCard, Wallet, FileText, FilePlus, Heart } from 'lucide-react';
+import { Settings, Plus, ShoppingCart, CreditCard, Wallet, FileText, FilePlus, Heart, FolderHeart } from 'lucide-react';
 import { CURRENT_USER, MOCK_COMMUNITY_FEED, MOCK_PRODUCTS, MOCK_MY_COMMENTS } from '../types';
 import { useNav } from '../context/NavContext';
 
@@ -200,7 +200,7 @@ export const MeTab = () => {
       <div className="bg-white mb-2 py-4 flex justify-around">
          {[
            { icon: ShoppingCart, label: '购物车', action: () => {} },
-           { icon: CreditCard, label: '待付款', action: () => {} },
+           { icon: FolderHeart, label: '作品集', action: () => pushScreen({ name: 'collection_list' }) },
            { icon: Wallet, label: '我的钱包', action: () => pushScreen({ name: 'wallet' }) },
            { icon: FileText, label: '我的收益', action: () => pushScreen({ name: 'wallet' }) },
            { icon: FilePlus, label: '全部订单', action: () => {} }
