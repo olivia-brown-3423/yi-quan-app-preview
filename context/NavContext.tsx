@@ -31,7 +31,7 @@ export type Screen =
   | { name: 'create_collection' }
   | { name: 'collection_detail'; params: any }
   | { name: 'shopping_cart' }
-  | { name: 'order_list' };
+  | { name: 'order_list'; params?: any };
 
 interface NavContextType {
   activeTab: string;

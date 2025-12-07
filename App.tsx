@@ -95,7 +95,7 @@ export default function App() {
       case 'create_collection': return <CreateCollectionPage />;
       case 'collection_detail': return <CollectionDetailPage params={screen.params} />;
       case 'shopping_cart': return <ShoppingCartPage />;
-      case 'order_list': return <OrderListPage />;
+      case 'order_list': return <OrderListPage params={screen.params} />;
       default: return null;
     }
   };
