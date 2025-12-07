@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ChevronLeft, Plus, Archive, MoreHorizontal } from 'lucide-react';
+import { ChevronLeft, Plus, Archive, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useNav } from '../../context/NavContext';
 import { MOCK_PRODUCTS } from '../../types';
 
@@ -9,6 +9,7 @@ export const ProductManagementPage = () => {
    const [activeTab, setActiveTab] = useState<'on_shelf' | 'off_shelf'>('on_shelf');
    
    const [productList, setProductList] = useState(MOCK_PRODUCTS);
+   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
    const myProducts = productList.filter(p => p.seller.id === 'me');
    const displayProducts = myProducts.filter(p => p.status === activeTab);
@@ -22,6 +23,13 @@ export const ProductManagementPage = () => {
          }
          return p;
       }));
+   };
+
+   const handleDelete = (id: string) => {
+      if (window.confirm('确定要删除该商品吗？此操作无法恢复。')) {
+         setProductList(prev => prev.filter(p => p.id !== id));
+         setOpenMenuId(null);
+      }
    };
 
    return (
@@ -49,7 +57,7 @@ export const ProductManagementPage = () => {
             </div>
          </div>
 
-         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+         <div className="flex-1 overflow-y-auto p-4 space-y-4" onClick={() => setOpenMenuId(null)}>
             {displayProducts.length === 0 ? (
                <div className="flex flex-col items-center justify-center h-64 text-gray-400">
                   <Archive size={48} className="mb-2 opacity-50" />
@@ -57,7 +65,7 @@ export const ProductManagementPage = () => {
                </div>
             ) : (
                displayProducts.map(p => (
-                  <div key={p.id} className="bg-white rounded-xl p-3 shadow-sm flex items-start space-x-3">
+                  <div key={p.id} className="bg-white rounded-xl p-3 shadow-sm flex items-start space-x-3 relative z-0">
                      <img src={p.image} className="w-20 h-20 rounded-lg object-cover bg-gray-100" alt="p" />
                      <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
@@ -68,31 +76,51 @@ export const ProductManagementPage = () => {
                            <span>已售 {p.sales}</span>
                            <span>库存 999+</span>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 relative z-10">
                            <button 
-                              onClick={() => pushScreen({ name: 'create_product', params: { productId: p.id } })}
+                              onClick={(e) => { e.stopPropagation(); pushScreen({ name: 'create_product', params: { productId: p.id } }); }}
                               className="flex-1 bg-gray-50 text-gray-700 py-1.5 rounded text-xs font-medium border"
                            >
                               编辑
                            </button>
                            {p.status === 'on_shelf' ? (
                               <button 
-                                 onClick={() => updateStatus(p.id, 'off_shelf')}
+                                 onClick={(e) => { e.stopPropagation(); updateStatus(p.id, 'off_shelf'); }}
                                  className="flex-1 bg-gray-50 text-orange-600 py-1.5 rounded text-xs font-medium border border-orange-100"
                               >
                                  下架
                               </button>
                            ) : (
                               <button 
-                                 onClick={() => updateStatus(p.id, 'on_shelf')}
+                                 onClick={(e) => { e.stopPropagation(); updateStatus(p.id, 'on_shelf'); }}
                                  className="flex-1 bg-blue-50 text-blue-600 py-1.5 rounded text-xs font-medium border border-blue-100"
                               >
                                  上架
                               </button>
                            )}
-                           <button className="w-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded border">
-                              <MoreHorizontal size={14} />
-                           </button>
+                           
+                           <div className="relative">
+                               <button 
+                                  onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === p.id ? null : p.id); }}
+                                  className="w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded border hover:bg-gray-100"
+                               >
+                                  <MoreHorizontal size={14} />
+                               </button>
+
+                               {openMenuId === p.id && (
+                                  <>
+                                     <div className="fixed inset-0 z-10 cursor-default" onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); }}></div>
+                                     <div className="absolute right-0 bottom-full mb-1 w-24 bg-white shadow-xl border border-gray-100 rounded-lg py-1 z-20 animate-in fade-in zoom-in-95 origin-bottom-right">
+                                        <button 
+                                           onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}
+                                           className="w-full text-left px-3 py-2.5 text-xs text-red-600 hover:bg-red-50 flex items-center transition-colors"
+                                        >
+                                           <Trash2 size={12} className="mr-2" /> 删除
+                                        </button>
+                                     </div>
+                                  </>
+                               )}
+                           </div>
                         </div>
                      </div>
                   </div>
