@@ -15,7 +15,9 @@ import {
   Megaphone,
   QrCode,
   Check,
-  Plus
+  Plus,
+  UserPlus,
+  UserMinus
 } from 'lucide-react';
 import { useNav } from '../../context/NavContext';
 import { MOCK_CHANNELS, CURRENT_USER, FOLLOWED_FRIENDS } from '../../types';
@@ -46,12 +48,12 @@ export const ChannelDetail = ({ params }: { params: any }) => {
   const [announcement, setAnnouncement] = useState(channel.announcements?.[0] || '暂无公告');
   const [notification, setNotification] = useState(true);
 
-  // Mock members list
-  const memberList = Array(20).fill(null).map((_, i) => ({
+  // Mock members list - initialize in state
+  const [memberList, setMemberList] = useState(() => Array(20).fill(null).map((_, i) => ({
       ...FOLLOWED_FRIENDS[i % FOLLOWED_FRIENDS.length],
       id: `m_${i}`,
       role: i === 0 ? 'owner' : (i < 3 ? 'admin' : 'member')
-  }));
+  })));
 
   // Handlers
   const handleJoin = () => { setIsJoined(true); };
@@ -75,6 +77,12 @@ export const ChannelDetail = ({ params }: { params: any }) => {
       if(!isOwner) return;
       const newText = prompt("修改频道公告", announcement);
       if(newText) setAnnouncement(newText);
+  };
+  
+  const handleRemoveMember = (memberId: string, memberName: string) => {
+      if (window.confirm(`确定要将 ${memberName} 移出本群吗？`)) {
+          setMemberList(prev => prev.filter(m => m.id !== memberId));
+      }
   };
 
   return (
@@ -284,31 +292,66 @@ export const ChannelDetail = ({ params }: { params: any }) => {
          )}
 
          {activeTab === 'members' && (
-             <div className="bg-white min-h-full pb-8">
-                 <div className="p-3 sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-50">
-                     <div className="bg-gray-100 rounded-xl px-4 py-2 flex items-center">
-                         <Search size={16} className="text-gray-400 mr-2" />
-                         <input type="text" placeholder="搜索群成员" className="bg-transparent text-sm w-full focus:outline-none placeholder:text-gray-400" />
+             <div className="bg-white min-h-full pb-8 animate-in fade-in">
+                 {/* Search & Invite Header */}
+                 <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-50">
+                     <div className="p-3">
+                        <div className="bg-gray-100 rounded-xl px-4 py-2 flex items-center transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100">
+                             <Search size={16} className="text-gray-400 mr-2" />
+                             <input type="text" placeholder="搜索群成员" className="bg-transparent text-sm w-full focus:outline-none placeholder:text-gray-400" />
+                        </div>
+                     </div>
+                     
+                     <div className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 border-b border-gray-50">
+                          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 mr-3">
+                              <UserPlus size={20} />
+                          </div>
+                          <div className="flex-1">
+                              <div className="font-bold text-sm text-gray-900">邀请新成员</div>
+                              <div className="text-xs text-gray-400">分享链接或二维码邀请好友加入</div>
+                          </div>
+                          <ChevronRight size={16} className="text-gray-300" />
                      </div>
                  </div>
                  
-                 <div className="p-4 grid grid-cols-5 gap-y-6 gap-x-2">
-                     <div className="flex flex-col items-center space-y-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity">
-                         <div className="w-12 h-12 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-50">
-                             <Users size={20} />
-                         </div>
-                         <span className="text-xs text-gray-500 font-medium">邀请</span>
-                     </div>
-                     {memberList.map((m, i) => (
-                         <div key={i} className="flex flex-col items-center space-y-1">
-                             <div className="relative">
-                                 <img src={m.avatar} className="w-12 h-12 rounded-xl bg-gray-200 object-cover" />
-                                 {m.role === 'owner' && <span className="absolute -top-1 -right-1 bg-amber-400 text-white text-[8px] px-1 rounded-sm shadow-sm">群主</span>}
-                                 {m.role === 'admin' && <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] px-1 rounded-sm shadow-sm">管理</span>}
+                 {/* List */}
+                 <div className="divide-y divide-gray-50">
+                     {memberList.map((m) => (
+                         <div key={m.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group">
+                             <div className="flex items-center space-x-3 overflow-hidden">
+                                 <div className="relative shrink-0">
+                                     <img src={m.avatar} className="w-10 h-10 rounded-full object-cover border border-gray-100" />
+                                     {m.role === 'owner' && (
+                                         <span className="absolute -bottom-1 -right-1 bg-amber-400 text-white text-[9px] px-1.5 py-0.5 rounded-full shadow-sm border border-white font-bold scale-90">
+                                             群主
+                                         </span>
+                                     )}
+                                     {m.role === 'admin' && (
+                                         <span className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-[9px] px-1.5 py-0.5 rounded-full shadow-sm border border-white font-bold scale-90">
+                                             管理员
+                                         </span>
+                                     )}
+                                 </div>
+                                 <div className="min-w-0">
+                                     <div className="text-sm font-bold text-gray-900 truncate">{m.name}</div>
+                                     <div className="text-xs text-gray-400 truncate">{m.location || '未知地区'} · {m.bio || '无签名'}</div>
+                                 </div>
                              </div>
-                             <span className="text-[10px] text-gray-600 truncate w-full text-center px-1">{m.name}</span>
+                             
+                             {/* Action Buttons */}
+                             {isOwner && m.role !== 'owner' && (
+                                 <button 
+                                     onClick={() => handleRemoveMember(m.id, m.name)}
+                                     className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
+                                 >
+                                     <UserMinus size={18} />
+                                 </button>
+                             )}
                          </div>
                      ))}
+                 </div>
+                 <div className="text-center text-xs text-gray-300 py-6">
+                      - 仅显示最近活跃成员 -
                  </div>
              </div>
          )}
