@@ -42,6 +42,7 @@ import { CollectionListPage } from './pages/me/CollectionListPage';
 import { CreateCollectionPage } from './pages/me/CreateCollectionPage';
 import { CollectionDetailPage } from './pages/me/CollectionDetailPage';
 import { ShoppingCartPage } from './pages/shop/ShoppingCartPage';
+import { OrderListPage } from './pages/shop/OrderListPage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('messages');
@@ -94,6 +95,7 @@ export default function App() {
       case 'create_collection': return <CreateCollectionPage />;
       case 'collection_detail': return <CollectionDetailPage params={screen.params} />;
       case 'shopping_cart': return <ShoppingCartPage />;
+      case 'order_list': return <OrderListPage />;
       default: return null;
     }
   };

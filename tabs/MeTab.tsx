@@ -208,10 +208,10 @@ export const MeTab = () => {
       <div className="bg-white mb-2 py-4 flex justify-around">
          {[
            { icon: ShoppingCart, label: '购物车', action: () => pushScreen({ name: 'shopping_cart' }) },
+           { icon: FilePlus, label: '全部订单', action: () => pushScreen({ name: 'order_list' }) },
            { icon: FolderHeart, label: '作品集', action: () => pushScreen({ name: 'collection_list' }) },
            { icon: Wallet, label: '我的钱包', action: () => pushScreen({ name: 'wallet' }) },
            { icon: FileText, label: '我的收益', action: () => pushScreen({ name: 'wallet' }) },
-           { icon: FilePlus, label: '全部订单', action: () => {} }
          ].map((item) => (
            <div 
              key={item.label} 
