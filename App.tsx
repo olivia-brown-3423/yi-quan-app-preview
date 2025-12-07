@@ -89,8 +89,8 @@ export default function App() {
       case 'create_group': return <CreateGroupPage />;
       case 'create_product': return <CreateProductPage params={screen.params} />;
       case 'product_management': return <ProductManagementPage />;
-      case 'channel_shop': return <ChannelShopPage />;
-      case 'channel_list_selector': return <ChannelListSelector />;
+      case 'channel_shop': return <ChannelShopPage params={screen.params} />;
+      case 'channel_list_selector': return <ChannelListSelector params={screen.params} />;
       case 'collection_list': return <CollectionListPage />;
       case 'create_collection': return <CreateCollectionPage />;
       case 'collection_detail': return <CollectionDetailPage params={screen.params} />;

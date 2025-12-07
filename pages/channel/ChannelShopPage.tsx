@@ -4,69 +4,92 @@ import { ChevronLeft, MoreHorizontal, FileText, Wrench, Video, ShoppingBag, Down
 import { useNav } from '../../context/NavContext';
 import { MOCK_PRODUCTS } from '../../types';
 
-export const ChannelShopPage = () => {
+export const ChannelShopPage = ({ params }: { params?: { title?: string, userId?: string } }) => {
   const { popScreen, pushScreen } = useNav();
+  
+  const pageTitle = params?.title || '群橱窗';
+  const userId = params?.userId;
 
-  // Create a mixed list of items specifically for the channel shop context
-  const shopItems: any[] = [
-    {
-       id: 's1',
-       title: 'GB/T 1234-2024 工业自动化仪表通用技术条件.pdf',
-       desc: '最新版国标文件下载，高清无水印',
-       price: 10,
-       type: 'file',
-       seller: { name: '资料管理员', avatar: 'https://picsum.photos/id/1012/50/50' },
-       hasImage: false
-    },
-    {
-       id: 's2',
-       title: '远程技术支持服务 (1小时)',
-       desc: '资深工程师在线解答PLC、DCS调试问题，支持视频指导',
-       price: 500,
-       type: 'service',
-       seller: { name: '工控老张', avatar: 'https://picsum.photos/id/1013/50/50' },
-       hasImage: false
-    },
-    // Include an existing product from mocks
-    {
-       ...MOCK_PRODUCTS[0], // Fluke Multimeter
-       desc: '全新正品，包含表笔、电池、说明书。',
-       hasImage: true
-    },
-    {
-       id: 's3',
-       title: '西门子 S7-200 SMART 编程实例源码 100例',
-       desc: '包含运动控制、PID算法、通讯等常用程序，实战参考必备',
-       price: 88,
-       type: 'code',
-       seller: { name: '自动化小王子', avatar: 'https://picsum.photos/id/1014/50/50' },
-       hasImage: false
-    },
-     {
-       ...MOCK_PRODUCTS[1], // PLC Tutorial
-       desc: '电子版教程，拍下自动发货。',
-       hasImage: true
-    },
-    {
-       id: 's4',
-       title: '2024上海国际仪器仪表展 (早鸟票)',
-       desc: '含展会指南、午餐券，仅限业内人士',
-       price: 20,
-       type: 'ticket',
-       seller: { name: '展会小助手', avatar: 'https://picsum.photos/id/1015/50/50' },
-       hasImage: false
-    },
-    {
-        id: 's5',
-        title: '二手横河EJA变送器 (9成新)',
-        desc: '项目剩余物资处理，功能完好，低价转让',
-        price: 800,
-        type: 'product',
-        seller: { name: '工程队老李', avatar: 'https://picsum.photos/id/1016/50/50' },
-        hasImage: true,
-        image: 'https://picsum.photos/id/1018/200/200'
-    }
-  ];
+  // Mock data filter
+  // If userId is provided, show only products from that user (User Shop)
+  // Otherwise show a mix (Channel/Group Shop)
+  
+  let shopItems: any[] = [];
+  
+  if (userId) {
+      shopItems = MOCK_PRODUCTS.filter(p => p.seller.id === userId && p.status === 'on_shelf').map(p => ({
+          ...p,
+          hasImage: true,
+          desc: p.description
+      }));
+      // Fallback mock items if empty for demo
+      if (shopItems.length === 0) {
+          shopItems = [
+              { ...MOCK_PRODUCTS[0], hasImage: true, desc: '测试商品' },
+              { ...MOCK_PRODUCTS[1], hasImage: true, desc: '测试商品' }
+          ];
+      }
+  } else {
+       shopItems = [
+        {
+           id: 's1',
+           title: 'GB/T 1234-2024 工业自动化仪表通用技术条件.pdf',
+           desc: '最新版国标文件下载，高清无水印',
+           price: 10,
+           type: 'file',
+           seller: { name: '资料管理员', avatar: 'https://picsum.photos/id/1012/50/50' },
+           hasImage: false
+        },
+        {
+           id: 's2',
+           title: '远程技术支持服务 (1小时)',
+           desc: '资深工程师在线解答PLC、DCS调试问题，支持视频指导',
+           price: 500,
+           type: 'service',
+           seller: { name: '工控老张', avatar: 'https://picsum.photos/id/1013/50/50' },
+           hasImage: false
+        },
+        // Include an existing product from mocks
+        {
+           ...MOCK_PRODUCTS[0], // Fluke Multimeter
+           desc: '全新正品，包含表笔、电池、说明书。',
+           hasImage: true
+        },
+        {
+           id: 's3',
+           title: '西门子 S7-200 SMART 编程实例源码 100例',
+           desc: '包含运动控制、PID算法、通讯等常用程序，实战参考必备',
+           price: 88,
+           type: 'code',
+           seller: { name: '自动化小王子', avatar: 'https://picsum.photos/id/1014/50/50' },
+           hasImage: false
+        },
+         {
+           ...MOCK_PRODUCTS[1], // PLC Tutorial
+           desc: '电子版教程，拍下自动发货。',
+           hasImage: true
+        },
+        {
+           id: 's4',
+           title: '2024上海国际仪器仪表展 (早鸟票)',
+           desc: '含展会指南、午餐券，仅限业内人士',
+           price: 20,
+           type: 'ticket',
+           seller: { name: '展会小助手', avatar: 'https://picsum.photos/id/1015/50/50' },
+           hasImage: false
+        },
+        {
+            id: 's5',
+            title: '二手横河EJA变送器 (9成新)',
+            desc: '项目剩余物资处理，功能完好，低价转让',
+            price: 800,
+            type: 'product',
+            seller: { name: '工程队老李', avatar: 'https://picsum.photos/id/1016/50/50' },
+            hasImage: true,
+            image: 'https://picsum.photos/id/1018/200/200'
+        }
+      ];
+  }
 
   const getIcon = (type: string) => {
       switch(type) {
@@ -92,14 +115,14 @@ export const ChannelShopPage = () => {
     <div className="flex flex-col h-full bg-gray-50">
       <div className="h-14 bg-white border-b flex items-center justify-between px-4 sticky top-0 z-10">
         <button onClick={popScreen} className="p-2 -ml-2 text-gray-700"><ChevronLeft size={24} /></button>
-        <span className="font-bold text-lg text-gray-900">群橱窗</span>
+        <span className="font-bold text-lg text-gray-900">{pageTitle}</span>
         <button className="p-2 -mr-2 text-gray-700"><MoreHorizontal size={24} /></button>
       </div>
 
       <div className="bg-orange-50 px-4 py-2 flex items-start space-x-2">
          <span className="text-orange-500 mt-0.5">ⓘ</span>
          <div className="text-xs text-orange-800 leading-relaxed">
-            群内交易请注意资金安全，平台推荐使用<span className="font-bold">仪豆支付</span>，享受担保交易服务。
+            交易请注意资金安全，平台推荐使用<span className="font-bold">仪豆支付</span>，享受担保交易服务。
          </div>
       </div>
 

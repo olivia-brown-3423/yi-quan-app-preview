@@ -26,7 +26,7 @@ export type Screen =
   | { name: 'create_product'; params?: any }
   | { name: 'product_management' }
   | { name: 'channel_shop'; params?: any }
-  | { name: 'channel_list_selector' }
+  | { name: 'channel_list_selector'; params?: any }
   | { name: 'collection_list' }
   | { name: 'create_collection' }
   | { name: 'collection_detail'; params: any }
