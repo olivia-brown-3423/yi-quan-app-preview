@@ -47,36 +47,44 @@ export const MeTab = () => {
         );
       case 'showcase':
         return (
-           <div className="flex-1 overflow-y-auto pb-4">
-             <div className="px-4 py-2">
+           <div className="flex-1 overflow-y-auto pb-4 bg-gray-50">
+             <div className="px-4 py-3 bg-white mb-2">
                 <button 
                   onClick={() => pushScreen({ name: 'product_management' })}
-                  className="w-full bg-blue-50 text-blue-600 border border-blue-200 rounded-lg py-2 text-sm font-medium flex items-center justify-center"
+                  className="w-full bg-blue-50 text-blue-600 border border-blue-200 rounded-lg py-2.5 text-sm font-medium flex items-center justify-center active:scale-[0.99] transition-transform"
                 >
                   <Plus size={16} className="mr-1" /> 橱窗管理 / 添加商品
                 </button>
              </div>
-             <div className="p-2 grid grid-cols-2 gap-2">
+             <div className="px-3 space-y-3">
                {MOCK_PRODUCTS.filter(p => p.status === 'on_shelf').map(product => (
                  <div 
                    key={product.id} 
-                   className="bg-white border rounded-lg overflow-hidden shadow-sm cursor-pointer"
+                   className="bg-white p-3 rounded-xl flex space-x-3 shadow-sm active:bg-gray-50 transition-colors cursor-pointer"
                    onClick={() => pushScreen({ name: 'product_detail', params: { productId: product.id } })}
                  >
-                    <div className="relative">
-                      <img src={product.image} className="w-full h-32 object-cover" />
-                      <div className="absolute top-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                    <div className="relative w-24 h-24 shrink-0">
+                      <img src={product.image} className="w-full h-full object-cover rounded-lg bg-gray-100" alt="prod" />
+                      <div className="absolute top-0 left-0 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded-tl-lg rounded-br-lg backdrop-blur-sm">
                          {product.type === 'file' ? '文件' : product.type === 'video_collection' ? '视频集' : '虚拟'}
                       </div>
                     </div>
-                    <div className="p-2">
-                       <div className="text-sm font-medium line-clamp-1">{product.title}</div>
-                       <div className="flex items-center justify-between mt-1">
-                          <div className="text-red-500 font-bold text-xs">
-                             <span className="text-[10px]">仪豆 </span>
+                    
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                       <div>
+                          <div className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug mb-1">{product.title}</div>
+                          <div className="flex flex-wrap gap-1">
+                             <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">自动发货</span>
+                             <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">平台担保</span>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-end justify-between">
+                          <div className="text-red-600 font-bold text-base">
+                             <span className="text-xs font-normal mr-0.5">仪豆</span>
                              {product.price}
                           </div>
-                          <div className="text-[10px] text-gray-400">已售 {product.sales}</div>
+                          <div className="text-xs text-gray-400 mb-0.5">已售 {product.sales}</div>
                        </div>
                     </div>
                  </div>
@@ -199,7 +207,7 @@ export const MeTab = () => {
 
       <div className="bg-white mb-2 py-4 flex justify-around">
          {[
-           { icon: ShoppingCart, label: '购物车', action: () => {} },
+           { icon: ShoppingCart, label: '购物车', action: () => pushScreen({ name: 'shopping_cart' }) },
            { icon: FolderHeart, label: '作品集', action: () => pushScreen({ name: 'collection_list' }) },
            { icon: Wallet, label: '我的钱包', action: () => pushScreen({ name: 'wallet' }) },
            { icon: FileText, label: '我的收益', action: () => pushScreen({ name: 'wallet' }) },

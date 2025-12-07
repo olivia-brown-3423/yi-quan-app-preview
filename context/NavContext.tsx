@@ -29,7 +29,8 @@ export type Screen =
   | { name: 'channel_list_selector' }
   | { name: 'collection_list' }
   | { name: 'create_collection' }
-  | { name: 'collection_detail'; params: any };
+  | { name: 'collection_detail'; params: any }
+  | { name: 'shopping_cart' };
 
 interface NavContextType {
   activeTab: string;

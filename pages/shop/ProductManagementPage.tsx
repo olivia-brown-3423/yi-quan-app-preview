@@ -63,7 +63,7 @@ export const ProductManagementPage = () => {
                         <div className="flex justify-between items-start mb-1">
                            <h3 className="font-medium text-gray-900 line-clamp-2 text-sm">{p.title}</h3>
                         </div>
-                        <div className="text-red-500 font-bold text-sm mb-2">¥ {p.price}</div>
+                        <div className="text-red-500 font-bold text-sm mb-2">{p.price} 仪豆</div>
                         <div className="flex justify-between items-center text-xs text-gray-400 mb-3">
                            <span>已售 {p.sales}</span>
                            <span>库存 999+</span>

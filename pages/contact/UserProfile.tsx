@@ -37,19 +37,32 @@ export const UserProfile = ({ params }: { params: { id: string } }) => {
           );
        case 'showcase':
           return (
-             <div className="grid grid-cols-2 gap-3 p-3 pb-6">
+             <div className="px-3 py-3 space-y-3 bg-gray-50 min-h-[300px]">
                {MOCK_PRODUCTS.map(product => (
-                 <div key={product.id} className="bg-white border rounded-lg overflow-hidden shadow-sm" onClick={() => pushScreen({ name: 'product_detail', params: { productId: product.id } })}>
-                    <div className="relative aspect-square">
-                      <img src={product.image} className="w-full h-full object-cover" alt="prod" />
-                      <div className="absolute top-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                 <div key={product.id} className="bg-white p-3 rounded-xl flex space-x-3 shadow-sm active:bg-gray-50 transition-colors cursor-pointer" onClick={() => pushScreen({ name: 'product_detail', params: { productId: product.id } })}>
+                    <div className="relative w-24 h-24 shrink-0">
+                      <img src={product.image} className="w-full h-full object-cover rounded-lg bg-gray-100" alt="prod" />
+                      <div className="absolute top-0 left-0 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded-tl-lg rounded-br-lg backdrop-blur-sm">
                           {product.type === 'file' ? '文件' : product.type === 'video_collection' ? '视频集' : '虚拟'}
                       </div>
                     </div>
-                    <div className="p-2">
-                       <div className="text-sm font-medium line-clamp-1">{product.title}</div>
-                       <div className="text-red-500 font-bold text-xs mt-1">¥ {product.price}</div>
-                       <div className="text-[10px] text-gray-400 mt-1">已售 {product.sales}</div>
+                    
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                       <div>
+                          <div className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug mb-1">{product.title}</div>
+                          <div className="flex flex-wrap gap-1">
+                             <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">自动发货</span>
+                             <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">平台担保</span>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-end justify-between">
+                          <div className="text-red-600 font-bold text-base">
+                             <span className="text-xs font-normal mr-0.5">仪豆</span>
+                             {product.price}
+                          </div>
+                          <div className="text-xs text-gray-400 mb-0.5">已售 {product.sales}</div>
+                       </div>
                     </div>
                  </div>
                ))}

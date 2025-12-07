@@ -645,5 +645,75 @@ export const FOLLOWED_FRIENDS: User[] = [
       followers: 8842,
       coins: 500
     }
+  },
+  { 
+    id: 'f3', 
+    name: '工控老王', 
+    avatar: 'https://picsum.photos/id/1012/50/50',
+    bio: 'PLC/DCS/SCADA，有问题随时问',
+    location: '上海',
+    stats: {
+      likes: 890,
+      mutuals: 2,
+      following: 15,
+      followers: 1200,
+      coins: 200
+    }
+  },
+  { 
+    id: 'f4', 
+    name: '西门子小王子', 
+    avatar: 'https://picsum.photos/id/1013/50/50',
+    bio: 'S7-1200/1500 专家',
+    location: '广东·深圳',
+    stats: {
+      likes: 450,
+      mutuals: 1,
+      following: 88,
+      followers: 560,
+      coins: 100
+    }
+  },
+  { 
+    id: 'f5', 
+    name: '环保监测员', 
+    avatar: 'https://picsum.photos/id/1014/50/50',
+    bio: 'CEMS运维，另外接私活',
+    location: '江苏·南京',
+    stats: {
+      likes: 120,
+      mutuals: 0,
+      following: 30,
+      followers: 150,
+      coins: 50
+    }
+  },
+  { 
+    id: 'f6', 
+    name: '仪表采购', 
+    avatar: 'https://picsum.photos/id/1015/50/50',
+    bio: '寻找优质供应商',
+    location: '山东·济南',
+    stats: {
+      likes: 50,
+      mutuals: 0,
+      following: 200,
+      followers: 80,
+      coins: 0
+    }
+  },
+  { 
+    id: 'f7', 
+    name: '自动化小白', 
+    avatar: 'https://picsum.photos/id/1016/50/50',
+    bio: '努力学习中...',
+    location: '湖北·武汉',
+    stats: {
+      likes: 10,
+      mutuals: 0,
+      following: 50,
+      followers: 20,
+      coins: 0
+    }
   }
 ];

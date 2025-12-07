@@ -41,6 +41,7 @@ import { ChannelListSelector } from './pages/channel/ChannelListSelector';
 import { CollectionListPage } from './pages/me/CollectionListPage';
 import { CreateCollectionPage } from './pages/me/CreateCollectionPage';
 import { CollectionDetailPage } from './pages/me/CollectionDetailPage';
+import { ShoppingCartPage } from './pages/shop/ShoppingCartPage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('messages');
@@ -92,6 +93,7 @@ export default function App() {
       case 'collection_list': return <CollectionListPage />;
       case 'create_collection': return <CreateCollectionPage />;
       case 'collection_detail': return <CollectionDetailPage params={screen.params} />;
+      case 'shopping_cart': return <ShoppingCartPage />;
       default: return null;
     }
   };

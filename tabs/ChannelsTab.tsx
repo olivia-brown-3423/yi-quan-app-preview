@@ -420,7 +420,7 @@ const RecommendVideoView = () => {
             channel: MOCK_CHANNELS[1], // Tech Group
             video: MOCK_VIDEOS[1],
             desc: '现场调试遇到个棘手的问题，求群里大佬支招！PID参数怎么调都不对。',
-            music: '工程师日常BGM'
+            music: '工程师日常创作'
         },
         {
             id: 'f3',
@@ -448,21 +448,21 @@ const RecommendVideoView = () => {
             channel: { ...MOCK_CHANNELS[0], name: '环保监测站', cover: 'https://picsum.photos/id/1035/300/300' },
             video: { ...MOCK_VIDEOS[3], videoInfo: { ...MOCK_VIDEOS[3].videoInfo, cover: 'https://picsum.photos/id/190/400/600' }, user: { ...MOCK_VIDEOS[3].user, name: '环保卫士' } },
             desc: 'CEMS 系统日常巡检 vlog，爬烟囱的一天。',
-            music: '奋斗者'
+            music: '奋斗者之歌'
         },
         {
             id: 'f7',
             channel: MOCK_CHANNELS[2],
             video: { ...MOCK_VIDEOS[2], videoInfo: { ...MOCK_VIDEOS[2].videoInfo, cover: 'https://picsum.photos/id/210/400/600' }, user: { ...MOCK_VIDEOS[2].user, name: '生活家' } },
             desc: '周末去露营，带上吉他和心爱的她。',
-            music: 'Acoustic Guitar'
+            music: '原声吉他 · 纯音乐'
         },
         {
             id: 'f8',
             channel: MOCK_CHANNELS[0],
             video: { ...MOCK_VIDEOS[0], videoInfo: { ...MOCK_VIDEOS[0].videoInfo, cover: 'https://picsum.photos/id/220/400/600' }, user: { ...MOCK_VIDEOS[0].user, name: '黑科技' } },
             desc: '这是什么神仙仪器？测量速度也太快了吧！',
-            music: 'Cyberpunk 2077'
+            music: '赛博朋克 2077 原声带'
         }
     ], []);
 
