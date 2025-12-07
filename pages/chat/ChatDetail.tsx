@@ -43,7 +43,7 @@ export const ChatDetail = ({ params }: { params: { title: string, count?: number
 
   return (
     <div className="flex flex-col h-full bg-gray-100">
-      <div className="h-14 bg-white border-b flex items-center justify-between px-4 shrink-0 shadow-sm z-10">
+      <div className="h-14 bg-white border-b flex items-center justify-between px-4 shrink-0 shadow-sm z-10 sticky top-0">
         <button onClick={popScreen} className="p-2 -ml-2 text-gray-700">
           <ChevronLeft size={24} />
         </button>

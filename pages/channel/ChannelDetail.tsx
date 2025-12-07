@@ -1,114 +1,336 @@
 
 import React, { useState } from 'react';
-import { ChevronLeft, Volume2, MessageCircle, File as FileIcon } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  Users, 
+  Search, 
+  ChevronRight, 
+  MessageCircle, 
+  MoreHorizontal, 
+  Share2, 
+  Bell, 
+  LogOut, 
+  ShieldAlert, 
+  Edit3, 
+  Megaphone,
+  QrCode,
+  Check,
+  Plus
+} from 'lucide-react';
 import { useNav } from '../../context/NavContext';
-import { MOCK_CHANNELS } from '../../types';
+import { MOCK_CHANNELS, CURRENT_USER, FOLLOWED_FRIENDS } from '../../types';
 
 export const ChannelDetail = ({ params }: { params: any }) => {
   const { popScreen, pushScreen } = useNav();
-  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'files'>('home');
+  const [activeTab, setActiveTab] = useState<'info' | 'members'>('info');
+  
+  // Logic to determine initial join state. 
+  // Default changed to false to show the Join button for demonstration.
+  const [isJoined, setIsJoined] = useState(params.joined !== undefined ? params.joined : false); 
 
   const channel = MOCK_CHANNELS.find(c => c.name === params.title) || {
     name: params.title || '未知频道',
-    members: params.count || 10,
-    resources: 100,
-    description: '这是一个频道的简介...',
-    cover: 'https://picsum.photos/id/1018/300/300',
-    ownerId: 'unknown',
-    announcements: []
+    members: params.count || 567,
+    id: 'ch_8848123',
+    resources: 2394,
+    description: '这是一个频道的简介，点击编辑可以修改频道信息。',
+    cover: 'https://picsum.photos/id/1018/600/400',
+    ownerId: 'me', 
+    announcements: ['欢迎新成员加入！本群禁止发布广告。']
   };
 
-  const isOwner = channel.ownerId === 'me';
+  const isOwner = channel.ownerId === 'me' || channel.ownerId === CURRENT_USER.id;
+  
+  // State for editable fields
+  const [channelName, setChannelName] = useState(channel.name);
+  const [announcement, setAnnouncement] = useState(channel.announcements?.[0] || '暂无公告');
+  const [notification, setNotification] = useState(true);
+
+  // Mock members list
+  const memberList = Array(20).fill(null).map((_, i) => ({
+      ...FOLLOWED_FRIENDS[i % FOLLOWED_FRIENDS.length],
+      id: `m_${i}`,
+      role: i === 0 ? 'owner' : (i < 3 ? 'admin' : 'member')
+  }));
+
+  // Handlers
+  const handleJoin = () => { setIsJoined(true); };
+  const handleExit = () => { 
+      if(confirm('确定要退出该频道吗？')) {
+          setIsJoined(false); 
+          popScreen();
+      }
+  };
+  const handleDisband = () => {
+      if(confirm('确定要解散该频道吗？此操作不可逆。')) {
+          popScreen();
+      }
+  };
+  const handleEditName = () => {
+      if(!isOwner) return;
+      const newName = prompt("修改频道名称", channelName);
+      if(newName) setChannelName(newName);
+  };
+  const handleEditAnnouncement = () => {
+      if(!isOwner) return;
+      const newText = prompt("修改频道公告", announcement);
+      if(newText) setAnnouncement(newText);
+  };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 relative">
-      <div className="h-48 w-full relative">
-         <img src={channel.cover} className="w-full h-full object-cover" alt="cover" />
-         <div className="absolute inset-0 bg-black/30"></div>
-         <button onClick={popScreen} className="absolute top-4 left-4 p-2 bg-black/20 rounded-full text-white backdrop-blur-md">
-            <ChevronLeft size={20} />
-         </button>
-         <div className="absolute bottom-4 left-4 text-white">
-            <h1 className="text-2xl font-bold mb-1">{channel.name}</h1>
-            <div className="text-xs opacity-80 flex space-x-3">
-               <span>频道号: 8848123</span>
-               <span>{channel.members} 成员</span>
+    <div className="flex flex-col h-full bg-[#f2f4f7] relative">
+      {/* --- HERO HEADER --- */}
+      <div className="relative w-full h-64 shrink-0 bg-gray-900 group overflow-hidden">
+         {/* Background Image */}
+         <img src={channel.cover} className="w-full h-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" alt="cover" />
+         
+         {/* Gradient Overlay */}
+         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10"></div>
+         
+         {/* Navbar Actions */}
+         <div className="absolute top-0 w-full p-4 pt-safe flex justify-between items-center z-20">
+            <button onClick={popScreen} className="w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white active:bg-white/20 transition-all">
+               <ChevronLeft size={22} />
+            </button>
+            <div className="flex items-center space-x-3">
+               {!isJoined && (
+                   <button 
+                       onClick={handleJoin}
+                       className="bg-blue-600/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-sm active:scale-95 transition-all"
+                   >
+                       加入
+                   </button>
+               )}
+               <button className="w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white active:bg-white/20 transition-all">
+                   <Share2 size={18} />
+               </button>
+               <button className="w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white active:bg-white/20 transition-all">
+                   <MoreHorizontal size={18} />
+               </button>
             </div>
          </div>
-         <div className="absolute bottom-4 right-4 flex space-x-2">
-            <button className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold">
-               {isOwner ? '管理' : '+ 加入'}
-            </button>
+
+         {/* Hero Content */}
+         <div className="absolute bottom-0 w-full p-5 z-20 flex justify-between items-end">
+            <div className="flex-1 mr-4">
+                <h1 className="text-2xl font-bold text-white mb-2 leading-snug drop-shadow-md">{channelName}</h1>
+                <div className="flex items-center space-x-3 text-xs text-white/80 font-medium">
+                    <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-md border border-white/10">频道号: {channel.id.replace(/\D/g,'') || '8848123'}</span>
+                    <span>{channel.members} 成员</span>
+                </div>
+            </div>
+            
+            {/* JOIN BUTTON (Floating on Image) */}
+            {!isJoined && (
+                 <button 
+                   onClick={handleJoin}
+                   className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-xl shadow-blue-900/40 active:scale-95 transition-all flex items-center animate-in zoom-in"
+                 >
+                   <Plus size={18} className="mr-1" /> 加入频道
+                 </button>
+            )}
          </div>
       </div>
 
-      <div className="bg-white flex border-b px-4">
+      {/* --- TABS --- */}
+      <div className="bg-white flex border-b sticky top-0 z-30 shadow-sm rounded-t-xl -mt-4 relative">
          {[
-           {id: 'home', label: '主页'},
-           {id: 'chat', label: '群聊'},
-           {id: 'files', label: '资源'},
+           {id: 'info', label: '主页'},
+           {id: 'members', label: '成员'},
          ].map(tab => (
            <div 
              key={tab.id}
              onClick={() => setActiveTab(tab.id as any)}
-             className={`px-4 py-3 text-sm font-medium cursor-pointer ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+             className={`flex-1 py-3.5 text-sm font-bold text-center cursor-pointer transition-colors relative
+               ${activeTab === tab.id ? 'text-gray-900' : 'text-gray-400'}`}
            >
               {tab.label}
+              {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gray-900 rounded-full"></div>
+              )}
            </div>
          ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-         {activeTab === 'home' && (
-            <div className="p-4 space-y-4">
-               <div className="bg-white p-4 rounded-xl shadow-sm">
-                  <div className="flex justify-between items-center mb-3">
-                     <h3 className="font-bold text-gray-900 flex items-center"><Volume2 size={16} className="mr-2 text-orange-500" /> 公告</h3>
-                     <span className="text-xs text-gray-400">更多</span>
-                  </div>
-                  <div className="space-y-2">
-                     {(channel.announcements || ['暂无公告']).map((a, i) => (
-                        <div key={i} className="text-sm text-gray-600 truncate">• {a}</div>
+      {/* --- CONTENT --- */}
+      <div className="flex-1 overflow-y-auto pb-safe">
+         {activeTab === 'info' && (
+             <div className="p-4 space-y-4">
+                
+                {/* Section 1: Basic Info */}
+                <div className="bg-white rounded-2xl p-1 shadow-sm border border-gray-100/50">
+                    <MenuItem 
+                       icon={<Edit3 size={18} />} 
+                       label="群名称" 
+                       value={channelName} 
+                       onClick={isOwner ? handleEditName : undefined}
+                       showArrow={isOwner}
+                       iconColor="text-blue-500 bg-blue-50"
+                    />
+                    <MenuItem 
+                       icon={<QrCode size={18} />} 
+                       label="群二维码" 
+                       value={<QrCode size={16} className="text-gray-400" />} 
+                       showArrow
+                       iconColor="text-gray-500 bg-gray-100"
+                    />
+                    <div className="flex flex-col px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors rounded-xl" onClick={isOwner ? handleEditAnnouncement : undefined}>
+                       <div className="flex items-center justify-between mb-2">
+                           <div className="flex items-center space-x-3">
+                               <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                                   <Megaphone size={16} />
+                               </div>
+                               <span className="font-medium text-sm text-gray-900">群公告</span>
+                           </div>
+                           {isOwner && <ChevronRight size={16} className="text-gray-300" />}
+                       </div>
+                       <p className="text-sm text-gray-500 leading-relaxed pl-11 pr-2 line-clamp-3">
+                          {announcement}
+                       </p>
+                    </div>
+                </div>
+
+                {/* Section 2: Members Preview */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => setActiveTab('members')}>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                           <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
+                               <Users size={16} />
+                           </div>
+                           <span className="font-medium text-sm text-gray-900">群成员</span>
+                        </div>
+                        <div className="flex items-center text-xs text-gray-400">
+                            <span>共 {channel.members} 人</span>
+                            <ChevronRight size={16} className="ml-1 text-gray-300" />
+                        </div>
+                    </div>
+                    <div className="flex items-center pl-11 -space-x-2 overflow-hidden py-1">
+                        {memberList.slice(0, 6).map(m => (
+                            <img key={m.id} src={m.avatar} className="w-8 h-8 rounded-full border-2 border-white" />
+                        ))}
+                        <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-50 flex items-center justify-center text-gray-400 text-xs">•••</div>
+                    </div>
+                </div>
+
+                {/* Section 3: Settings (If Joined) */}
+                {isJoined && (
+                    <div className="bg-white rounded-2xl p-1 shadow-sm border border-gray-100/50">
+                        <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" onClick={() => setNotification(!notification)}>
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                                    <Bell size={16} />
+                                </div>
+                                <span className="font-medium text-sm text-gray-900">消息通知</span>
+                            </div>
+                            <div className={`w-10 h-6 rounded-full relative transition-colors ${notification ? 'bg-blue-600' : 'bg-gray-200'}`}>
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm absolute top-1 transition-all ${notification ? 'left-5' : 'left-1'}`}></div>
+                            </div>
+                        </div>
+                        <MenuItem 
+                           icon={<Search size={18} />} 
+                           label="查找聊天记录" 
+                           showArrow
+                           iconColor="text-gray-500 bg-gray-100"
+                        />
+                        <MenuItem 
+                           icon={<ShieldAlert size={18} />} 
+                           label="投诉" 
+                           showArrow
+                           iconColor="text-red-500 bg-red-50"
+                        />
+                    </div>
+                )}
+
+                {/* Actions */}
+                <div className="pt-4 pb-8 space-y-3">
+                   {isJoined ? (
+                       <>
+                          <button 
+                             onClick={() => pushScreen({ name: 'chat_detail', params: { title: channelName, count: channel.members } })}
+                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+                          >
+                             <MessageCircle size={20} />
+                             <span>进入聊天</span>
+                          </button>
+                          
+                          {isOwner ? (
+                              <button 
+                                onClick={handleDisband}
+                                className="w-full bg-white text-red-500 font-bold py-3.5 rounded-xl border border-gray-200 hover:bg-red-50 active:scale-[0.98] transition-all"
+                              >
+                                解散群组
+                              </button>
+                          ) : (
+                              <button 
+                                onClick={handleExit}
+                                className="w-full bg-white text-gray-500 font-bold py-3.5 rounded-xl border border-gray-200 hover:bg-gray-50 active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+                              >
+                                <LogOut size={18} />
+                                <span>退出群组</span>
+                              </button>
+                          )}
+                       </>
+                   ) : (
+                       <button 
+                          onClick={handleJoin}
+                          className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center"
+                       >
+                          <Plus size={20} className="mr-2" />
+                          加入群组
+                       </button>
+                   )}
+                </div>
+             </div>
+         )}
+
+         {activeTab === 'members' && (
+             <div className="bg-white min-h-full pb-8">
+                 <div className="p-3 sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-50">
+                     <div className="bg-gray-100 rounded-xl px-4 py-2 flex items-center">
+                         <Search size={16} className="text-gray-400 mr-2" />
+                         <input type="text" placeholder="搜索群成员" className="bg-transparent text-sm w-full focus:outline-none placeholder:text-gray-400" />
+                     </div>
+                 </div>
+                 
+                 <div className="p-4 grid grid-cols-5 gap-y-6 gap-x-2">
+                     <div className="flex flex-col items-center space-y-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity">
+                         <div className="w-12 h-12 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-50">
+                             <Users size={20} />
+                         </div>
+                         <span className="text-xs text-gray-500 font-medium">邀请</span>
+                     </div>
+                     {memberList.map((m, i) => (
+                         <div key={i} className="flex flex-col items-center space-y-1">
+                             <div className="relative">
+                                 <img src={m.avatar} className="w-12 h-12 rounded-xl bg-gray-200 object-cover" />
+                                 {m.role === 'owner' && <span className="absolute -top-1 -right-1 bg-amber-400 text-white text-[8px] px-1 rounded-sm shadow-sm">群主</span>}
+                                 {m.role === 'admin' && <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] px-1 rounded-sm shadow-sm">管理</span>}
+                             </div>
+                             <span className="text-[10px] text-gray-600 truncate w-full text-center px-1">{m.name}</span>
+                         </div>
                      ))}
-                  </div>
-               </div>
-               <div className="bg-white p-4 rounded-xl shadow-sm">
-                  <h3 className="font-bold text-gray-900 mb-2">简介</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{channel.description}</p>
-               </div>
-            </div>
-         )}
-         {activeTab === 'chat' && (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-               <div className="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <MessageCircle size={32} />
-               </div>
-               <h3 className="font-bold text-lg mb-2">加入群聊</h3>
-               <p className="text-gray-500 text-sm mb-6">与 {channel.members} 位成员一起讨论</p>
-               <button 
-                  onClick={() => pushScreen({ name: 'chat_detail', params: { title: channel.name, count: channel.members } })}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg"
-               >
-                  进入群聊
-               </button>
-            </div>
-         )}
-         {activeTab === 'files' && (
-            <div className="p-4 space-y-3">
-               {[1,2,3].map(i => (
-                  <div key={i} className="bg-white p-4 rounded-xl shadow-sm flex items-center">
-                     <div className="w-10 h-10 bg-red-100 text-red-500 rounded flex items-center justify-center mr-3">
-                        <FileIcon size={20} />
-                     </div>
-                     <div className="flex-1">
-                        <div className="font-medium text-sm">行业标准文档_v{i}.0.pdf</div>
-                        <div className="text-xs text-gray-400">2.5MB · 2023-11-20</div>
-                     </div>
-                  </div>
-               ))}
-            </div>
+                 </div>
+             </div>
          )}
       </div>
     </div>
   );
-}
+};
+
+const MenuItem = ({ icon, label, value, onClick, showArrow, iconColor }: any) => (
+    <div 
+       className={`flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 rounded-xl transition-colors ${onClick ? 'cursor-pointer' : ''}`}
+       onClick={onClick}
+    >
+       <div className="flex items-center space-x-3">
+           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${iconColor}`}>
+               {icon}
+           </div>
+           <span className="font-medium text-sm text-gray-900">{label}</span>
+       </div>
+       <div className="flex items-center">
+           <span className="text-sm text-gray-500 mr-2 truncate max-w-[150px]">{value}</span>
+           {showArrow && <ChevronRight size={16} className="text-gray-300" />}
+       </div>
+    </div>
+);
