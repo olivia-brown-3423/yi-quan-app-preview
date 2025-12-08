@@ -17,7 +17,10 @@ import {
   Check,
   Plus,
   UserPlus,
-  UserMinus
+  UserMinus,
+  X,
+  CheckCircle,
+  Circle
 } from 'lucide-react';
 import { useNav } from '../../context/NavContext';
 import { MOCK_CHANNELS, CURRENT_USER, FOLLOWED_FRIENDS } from '../../types';
@@ -55,6 +58,23 @@ export const ChannelDetail = ({ params }: { params: any }) => {
       role: i === 0 ? 'owner' : (i < 3 ? 'admin' : 'member')
   })));
 
+  // Invite Modal State
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteSearchTerm, setInviteSearchTerm] = useState('');
+  const [selectedInvitees, setSelectedInvitees] = useState<string[]>([]);
+  
+  // Mock Friends to Invite
+  const FRIENDS_TO_INVITE = [
+      { id: 'u_new_1', name: '隔壁老王', avatar: 'https://picsum.photos/seed/u1/200/200', bio: '爱好多' },
+      { id: 'u_new_2', name: '不吃香菜', avatar: 'https://picsum.photos/seed/u2/200/200', bio: '前端开发' },
+      { id: 'u_new_3', name: 'Traveler', avatar: 'https://picsum.photos/seed/u3/200/200', bio: '一直在路上' },
+      { id: 'u_new_4', name: 'Alice', avatar: 'https://picsum.photos/seed/u4/200/200', bio: 'UI Designer' },
+      { id: 'u_new_5', name: 'Bob', avatar: 'https://picsum.photos/seed/u5/200/200', bio: 'Product Manager' },
+      { id: 'u_new_6', name: 'Charlie', avatar: 'https://picsum.photos/seed/u6/200/200', bio: 'Fullstack Dev' },
+      { id: 'u_new_7', name: 'David', avatar: 'https://picsum.photos/seed/u7/200/200', bio: 'Engineer' },
+      { id: 'u_new_8', name: 'Eve', avatar: 'https://picsum.photos/seed/u8/200/200', bio: 'Hacker' },
+  ];
+
   // Handlers
   const handleJoin = () => { setIsJoined(true); };
   const handleExit = () => { 
@@ -83,6 +103,26 @@ export const ChannelDetail = ({ params }: { params: any }) => {
       if (window.confirm(`确定要将 ${memberName} 移出本群吗？`)) {
           setMemberList(prev => prev.filter(m => m.id !== memberId));
       }
+  };
+
+  const toggleInvitee = (id: string) => {
+      setSelectedInvitees(prev => 
+          prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+  };
+
+  const handleConfirmInvite = () => {
+      const newMembers = FRIENDS_TO_INVITE.filter(f => selectedInvitees.includes(f.id)).map(f => ({
+          ...f,
+          role: 'member', // default role
+          location: '新加入',
+          stats: { likes: 0, mutuals: 0, following: 0, followers: 0, coins: 0 }, // mock
+          isVip: false
+      }));
+      // Prepend new members to the list (or append)
+      setMemberList(prev => [...newMembers, ...prev]);
+      setShowInviteModal(false);
+      setSelectedInvitees([]);
   };
 
   return (
@@ -302,7 +342,10 @@ export const ChannelDetail = ({ params }: { params: any }) => {
                         </div>
                      </div>
                      
-                     <div className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 border-b border-gray-50">
+                     <div 
+                        className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 border-b border-gray-50"
+                        onClick={() => setShowInviteModal(true)}
+                     >
                           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 mr-3">
                               <UserPlus size={20} />
                           </div>
@@ -356,6 +399,69 @@ export const ChannelDetail = ({ params }: { params: any }) => {
              </div>
          )}
       </div>
+
+      {/* --- INVITE MODAL --- */}
+      {showInviteModal && (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end">
+              {/* Backdrop */}
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={() => setShowInviteModal(false)}></div>
+              
+              {/* Modal Content */}
+              <div className="bg-white w-full h-[85vh] rounded-t-2xl relative z-10 flex flex-col animate-in slide-in-from-bottom duration-300 shadow-2xl">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+                      <button onClick={() => setShowInviteModal(false)} className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                          <X size={24} />
+                      </button>
+                      <span className="font-bold text-lg text-gray-900">邀请好友</span>
+                      <button 
+                          onClick={handleConfirmInvite}
+                          disabled={selectedInvitees.length === 0}
+                          className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${selectedInvitees.length > 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-gray-100 text-gray-400'}`}
+                      >
+                          确定{selectedInvitees.length > 0 ? `(${selectedInvitees.length})` : ''}
+                      </button>
+                  </div>
+                  
+                  {/* Search */}
+                  <div className="px-4 py-3">
+                      <div className="bg-gray-100 rounded-xl px-4 py-2.5 flex items-center">
+                          <Search size={18} className="text-gray-400 mr-2" />
+                          <input 
+                              type="text" 
+                              placeholder="搜索好友" 
+                              className="bg-transparent text-sm w-full focus:outline-none placeholder:text-gray-400 text-gray-900" 
+                              value={inviteSearchTerm}
+                              onChange={(e) => setInviteSearchTerm(e.target.value)}
+                          />
+                      </div>
+                  </div>
+
+                  {/* List */}
+                  <div className="flex-1 overflow-y-auto px-2">
+                       {/* Filtered List */}
+                       {FRIENDS_TO_INVITE.filter(f => f.name.includes(inviteSearchTerm)).map(friend => (
+                           <div 
+                              key={friend.id}
+                              onClick={() => toggleInvitee(friend.id)}
+                              className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer mb-1"
+                           >
+                              <div className="flex items-center space-x-3">
+                                  <img src={friend.avatar} className="w-10 h-10 rounded-full border border-gray-100" />
+                                  <div>
+                                      <div className="font-bold text-gray-900 text-sm">{friend.name}</div>
+                                      <div className="text-xs text-gray-400">{friend.bio}</div>
+                                  </div>
+                              </div>
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedInvitees.includes(friend.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'}`}>
+                                   {selectedInvitees.includes(friend.id) && <Check size={14} className="text-white" strokeWidth={3} />}
+                              </div>
+                           </div>
+                       ))}
+                  </div>
+              </div>
+          </div>
+      )}
     </div>
   );
 };

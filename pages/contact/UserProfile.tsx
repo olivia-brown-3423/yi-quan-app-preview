@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   ChevronLeft, 
@@ -370,7 +369,7 @@ export const UserProfile = ({ params }: { params: { id: string } }) => {
 };
 
 // Component for Feed Item in "All" / "Topic" tabs
-const FeedItemCard = ({ item, pushScreen }: { item: FeedItem, pushScreen: any }) => {
+const FeedItemCard: React.FC<{ item: FeedItem, pushScreen: any }> = ({ item, pushScreen }) => {
    const isVideo = item.hasVideo || item.type === 'video';
 
    return (
